@@ -235,8 +235,6 @@
             const td = data.forecast.forecastday[0].day;
             document.getElementById("minmax").textContent = `Max: ${td.maxtemp_c}° Min: ${td.mintemp_c}°`;
       
-            // ۵ ساعت آینده (از الان به بعد)
-// ۵ ساعت آینده (از الان به بعد)
 const now = new Date();
 const nowHour = now.getHours();
 const todayHours = data.forecast.forecastday[0].hour;
@@ -246,12 +244,12 @@ let nextHours = todayHours.filter(h => {
   return hour >= nowHour;
 });
 
-if (nextHours.length < 5) {
+if (nextHours.length < 4) {
   const tomorrowHours = data.forecast.forecastday[1].hour;
-  const needed = 5 - nextHours.length;
+  const needed = 4 - nextHours.length;
   nextHours = nextHours.concat(tomorrowHours.slice(0, needed));
 } else {
-  nextHours = nextHours.slice(0, 5);
+  nextHours = nextHours.slice(0, 4);
 }
 
 const hc = document.getElementById("hourly-container");
