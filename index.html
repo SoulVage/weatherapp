@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            background: linear-gradient(155deg, #08244F, #134CB5, #0B42AB);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .navbar_container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        .navbar_container .left_section {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .counter_hud {
+            margin-top: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+        .counter_hud img {
+            max-width: 200px;
+        }
+        .counter_hud h1 {
+            margin-top: 20px;
+            font-size: 65px;
+            font-weight: 500;
+        }
+        .counter_hud h2 {
+            font-size: 17px;
+            font-weight: 400;
+        }
+        .info_bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            color: white;
+            margin: 30px 0;
+            display: flex;
+            width: 100%;
+            height: 50px;
+            border-radius: 20px;
+            background-color: #0010265d;
+        }
+        .today_detail {
+            padding: 25px;
+            color: white;
+            display: flex;
+            width: 100%;
+            border-radius: 20px;
+            background-color: #0010265d;
+            flex-direction: column;
+        }
+        .today_detail .header {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            height: fit-content;
+        }
+        .today_detail .header h3 {
+            font-weight: 500;
+        }
+        .main_today {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .main_today .main_item {
+            padding: 12px 10px;
+            height: 125px;
+            justify-content: space-between;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main_item.active {
+            border: 1px solid #5096FF;
+            background-color: #2566a342;
+            border-radius: 20px;
+        }
+        .main_item img {
+            width: 40px;
+        }
+        .forcast_main {
+            margin-top: 30px;
+            padding: 25px;
+            color: white;
+            display: flex;
+            width: 100%;
+            border-radius: 20px;
+            background-color: #0010265d;
+            flex-direction: column;
+        }
+        .forcast_main .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .forcast_main .header h3 {
+            font-weight: 500;
+        }
+        .forcast_main .header i {
+            font-size: 21px;
+        }
+        .forcast_item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .forcast_item img {
+            width: 30px;
+        }
+        .forcast_item span {
+            display: flex;
+            font-size: 14px;
+            gap: 13px;
+        }
+        .forcast_item h5 {
+            padding: 10px 0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar_container">
+        <div class="left_section">
+          <i class="fa-regular fa-compass"></i>
+          <span id="location">Roudsar</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <i class="fa-regular fa-bell"></i>
+      </div>
+    
+      <div class="counter_hud">
+        <img id="weather-icon" src="sun.png" alt="">
+        <h1 id="temperature">--°</h1>
+        <h2 id="condition-text">Loading...</h2>
+        <p id="minmax">Max: --° Min: --°</p>
+      </div>
+    
+      <div class="info_bar">
+        <div><i class="fa-solid fa-droplet"></i> <span id="humidity">--%</span></div>
+        <div><i class="fa-solid fa-temperature-full"></i> <span id="feelslike">--°</span></div>
+        <div><i class="fa-solid fa-wind"></i> <span id="wind">-- km/h</span></div>
+      </div>
+    
+      <div class="today_detail">
+        <div class="header">
+          <h3>Today</h3>
+          <p id="today-date"></p>
+        </div>
+        <div class="main_today" id="hourly-container">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    
+      <div class="forcast_main">
+        <div class="header">
+          <h3>Next Forecast</h3>
+          <i class="fa-regular fa-calendar"></i>
+        </div>
+        <div id="forecast-container">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    
+      <script>
+        const API_KEY = "358adeb9eefe4b768c5155338252507";
+        const city = "Rudsar";
+      
+        // مپ وضعیت به آیکون‌ها
+        const customIcons = {
+          "Sunny": "images/clear.png",
+          "Clear": "images/clear.png",
+          "Partly cloudy": "images/partly_cloudy.png",
+          "Cloudy": "images/cloudy.png",
+          "Overcast": "images/cloudy.png",
+          "Rain": "images/rain.png",
+          "Patchy rain possible": "images/rain.png",
+          "Light rain": "images/rain.png",
+          "Snow": "images/snow.png",
+          // بقیه وضعیت‌ها رو اینجا ادامه بدید
+        };
+      
+        function getCustomIcon(conditionText) {
+          return customIcons[conditionText] || "images/default.png";
+        }
+      
+        async function getWeatherData() {
+          try {
+            // ۴ روز پیش‌بینی می‌گیریم (today + 3 روز آینده)
+            const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=4&aqi=no&alerts=no`);
+            const data = await res.json();
+            if (!data.current || !data.forecast) throw new Error("Invalid data");
+      
+            // وضعیت فعلی
+            const cur = data.current;
+            document.getElementById("temperature").textContent = cur.temp_c + "°";
+            document.getElementById("condition-text").textContent = cur.condition.text;
+            document.getElementById("weather-icon").src = getCustomIcon(cur.condition.text);
+            document.getElementById("humidity").textContent = cur.humidity + "%";
+            document.getElementById("feelslike").textContent = cur.feelslike_c + "°";
+            document.getElementById("wind").textContent = cur.wind_kph + " km/h";
+      
+            // تاریخ امروز
+            document.getElementById("today-date").textContent = new Date().toDateString();
+      
+            // دمای min/max امروز
+            const td = data.forecast.forecastday[0].day;
+            document.getElementById("minmax").textContent = `Max: ${td.maxtemp_c}° Min: ${td.mintemp_c}°`;
+      
+            // ۵ ساعت آینده (از الان به بعد)
+// ۵ ساعت آینده (از الان به بعد)
+const now = new Date();
+const nowHour = now.getHours();
+const todayHours = data.forecast.forecastday[0].hour;
+
+let nextHours = todayHours.filter(h => {
+  const hour = +h.time.split(" ")[1].split(":")[0];
+  return hour >= nowHour;
+});
+
+if (nextHours.length < 5) {
+  const tomorrowHours = data.forecast.forecastday[1].hour;
+  const needed = 5 - nextHours.length;
+  nextHours = nextHours.concat(tomorrowHours.slice(0, needed));
+} else {
+  nextHours = nextHours.slice(0, 5);
+}
+
+const hc = document.getElementById("hourly-container");
+hc.innerHTML = "";
+nextHours.forEach(h => {
+  const d = document.createElement("div");
+  d.className = "main_item";
+  d.innerHTML = `
+    <p>${h.temp_c}°</p>
+    <img src="${getCustomIcon(h.condition.text)}" alt="">
+    <span>${h.time.split(" ")[1].slice(0,5)}</span>
+  `;
+  hc.appendChild(d);
+});
+
+      
+            // پیش‌بینی ۴ روز (امروز + 3 روز آینده)
+            const fc = document.getElementById("forecast-container");
+            fc.innerHTML = "";
+            data.forecast.forecastday.forEach(day => {
+              const dt = new Date(day.date);
+              const el = document.createElement("div");
+              el.className = "forcast_item";
+              el.innerHTML = `
+                <h5>${dt.toLocaleDateString("en-US", {weekday: 'long'})}</h5>
+                <img src="${getCustomIcon(day.day.condition.text)}" alt="">
+                <span>
+                  <p>${day.day.mintemp_c}°</p>
+                  <p>${day.day.maxtemp_c}°</p>
+                </span>
+              `;
+              fc.appendChild(el);
+            });
+      
+          } catch(err) {
+            console.error(err);
+            document.getElementById("condition-text").textContent = "Error fetching data";
+          }
+        }
+      
+        getWeatherData();
+      </script>
+      
+</body>
+</html>
